@@ -13,7 +13,6 @@ import {
   adjustPoints,
   createLoyaltyExport,
   formatRewardType,
-  getCustomerPointBalance,
   getLoyaltyOptions,
   getLoyaltyRules,
   listLoyaltyTransactions,

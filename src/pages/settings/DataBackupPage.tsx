@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Download, FileArchive, FileJson, FileSpreadsheet, Filter, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Download, FileArchive, FileSpreadsheet, Filter, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Dropdown } from "@/components/ui/dropdown";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { EmptyState, LoadingState } from "@/components/shared/StateViews";
+import { LoadingState } from "@/components/shared/StateViews";
 import { BackupExportCard, MetricCard } from "@/components/shared/DesignSystem";
 import { Tabs } from "@/components/ui/tabs";
 import { BackupHistoryTable } from "@/components/backup/BackupHistoryTable";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CreditCard, Download, IdCard, Plus, QrCode, RefreshCcw } from "lucide-react";
+import { Download, IdCard, Plus, QrCode, RefreshCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
