@@ -8,6 +8,7 @@ import { RegisterPage } from "@/pages/auth/RegisterPage";
 import { ModulePage } from "@/pages/dashboard/ModulePage";
 import { DashboardPage } from "@/pages/dashboard/DashboardPage";
 import { BookingsPage } from "@/pages/dashboard/BookingsPage";
+import { MembershipsPage } from "@/pages/dashboard/MembershipsPage";
 import { SetupWizardPage } from "@/pages/dashboard/SetupWizardPage";
 import { SettingsPage } from "@/pages/settings/SettingsPage";
 import { DataBackupPage } from "@/pages/settings/DataBackupPage";
@@ -19,6 +20,7 @@ import { ProfilePage } from "@/pages/settings/ProfilePage";
 import { CustomerLoginPage } from "@/pages/portal/CustomerLoginPage";
 import { CustomerRegisterPage } from "@/pages/portal/CustomerRegisterPage";
 import { CustomerBookingsPage } from "@/pages/portal/CustomerBookingsPage";
+import { CustomerMembershipPage } from "@/pages/portal/CustomerMembershipPage";
 import { PublicBookingPage } from "@/pages/public/PublicBookingPage";
 
 export const router = createBrowserRouter([
@@ -54,7 +56,7 @@ export const router = createBrowserRouter([
       { path: "setup", element: <RequireRole roles="owner"><SetupWizardPage /></RequireRole> },
       { path: "customers", element: <ModulePage moduleKey="customers" title="Customers" /> },
       { path: "bookings", element: <RequireModule moduleKey="bookings"><BookingsPage /></RequireModule> },
-      { path: "memberships", element: <RequireModule moduleKey="memberships"><ModulePage moduleKey="memberships" title="Memberships" /></RequireModule> },
+      { path: "memberships", element: <RequireModule moduleKey="memberships"><MembershipsPage /></RequireModule> },
       { path: "loyalty", element: <RequireModule moduleKey="loyalty"><ModulePage moduleKey="loyalty" title="Loyalty & Rewards" /></RequireModule> },
       { path: "pos", element: <RequireModule moduleKey="pos"><ModulePage moduleKey="pos" title="POS" /></RequireModule> },
       { path: "inventory", element: <RequireModule moduleKey="inventory"><ModulePage moduleKey="inventory" title="Inventory" /></RequireModule> },
@@ -123,6 +125,16 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <RequireRole roles="customer">
               <CustomerBookingsPage />
+            </RequireRole>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "membership",
+        element: (
+          <ProtectedRoute>
+            <RequireRole roles="customer">
+              <CustomerMembershipPage />
             </RequireRole>
           </ProtectedRoute>
         ),
