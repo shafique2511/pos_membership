@@ -22,6 +22,8 @@ export type BusinessRecord = {
   slug: string;
   email: string | null;
   phone: string | null;
+  website: string | null;
+  address: string | null;
   status: string;
   owner_id: string | null;
   business_types?: {
