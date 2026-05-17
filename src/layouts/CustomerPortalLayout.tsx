@@ -16,8 +16,8 @@ export function CustomerPortalLayout() {
       <main className="px-4 py-5">
         <Outlet />
       </main>
-      <nav className="fixed inset-x-0 bottom-0 grid grid-cols-4 border-t bg-card">
-        {visibleItems.slice(0, 4).map((item) => {
+      <nav className="fixed inset-x-0 bottom-0 flex overflow-x-auto border-t bg-card">
+        {visibleItems.map((item) => {
           const Icon = item.icon;
 
           return (
@@ -25,7 +25,7 @@ export function CustomerPortalLayout() {
               key={item.label}
               to={item.href}
               className={({ isActive }) =>
-                cn("flex flex-col items-center gap-1 px-2 py-3 text-xs text-muted-foreground", isActive && "text-primary")
+                cn("flex min-w-20 flex-1 flex-col items-center gap-1 px-2 py-3 text-xs text-muted-foreground", isActive && "text-primary")
               }
             >
               <Icon className="h-5 w-5" />

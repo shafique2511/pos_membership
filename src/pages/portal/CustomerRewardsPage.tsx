@@ -4,13 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState, LoadingState } from "@/components/shared/StateViews";
-import { getCustomerPointBalance, listLoyaltyTransactions, listRewardRedemptions, listRewards, redeemReward, type LoyaltyTransaction, type RewardRecord, type RewardRedemption } from "@/features/loyalty/loyalty-service";
+import type { LoyaltyTransaction, RewardRecord, RewardRedemption } from "@/features/loyalty/loyalty-service";
 import { useAuth } from "@/features/auth/auth-context";
 import { useToast } from "@/components/ui/toast";
+import { getCustomerPointBalance, getLinkedCustomer, listCustomerLoyalty, redeemCustomerReward, type CustomerProfileRecord } from "@/features/portal/customer-portal-service";
 
 export function CustomerRewardsPage() {
   const auth = useAuth();
   const { toast } = useToast();
+  const [customer, setCustomer] = useState<CustomerProfileRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [rewards, setRewards] = useState<RewardRecord[]>([]);
   const [transactions, setTransactions] = useState<LoyaltyTransaction[]>([]);
@@ -19,26 +21,27 @@ export function CustomerRewardsPage() {
 
   useEffect(() => {
     void loadRewards();
-  }, [auth.business?.id]);
+  }, [auth.business?.id, auth.user?.id]);
 
   async function loadRewards() {
-    if (!auth.business?.id) {
+    if (!auth.business?.id || !auth.user?.id) {
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      const [nextRewards, nextTransactions, nextRedemptions] = await Promise.all([
-        listRewards(auth.business.id),
-        listLoyaltyTransactions({ businessId: auth.business.id }),
-        listRewardRedemptions({ businessId: auth.business.id }),
+      const linkedCustomer = await getLinkedCustomer(auth.business.id, auth.user.id);
+      setCustomer(linkedCustomer);
+      if (!linkedCustomer) return;
+      const [history, points] = await Promise.all([
+        listCustomerLoyalty(auth.business.id, linkedCustomer.id),
+        getCustomerPointBalance(auth.business.id, linkedCustomer.id),
       ]);
-      setRewards(nextRewards.filter((reward) => reward.status === "active"));
-      setTransactions(nextTransactions);
-      setRedemptions(nextRedemptions);
-      const customerId = nextTransactions[0]?.customer_id ?? nextRedemptions[0]?.customer_id;
-      setBalance(customerId ? await getCustomerPointBalance(auth.business.id, customerId) : 0);
+      setRewards(history.rewards.filter((reward) => reward.status === "active"));
+      setTransactions(history.transactions);
+      setRedemptions(history.redemptions);
+      setBalance(points);
     } catch (error) {
       toast({ title: "Rewards failed", description: error instanceof Error ? error.message : "Customer RLS may need linked customer records." });
     } finally {
@@ -47,13 +50,12 @@ export function CustomerRewardsPage() {
   }
 
   async function redeem(reward: RewardRecord) {
-    const customerId = transactions[0]?.customer_id ?? redemptions[0]?.customer_id;
-    if (!auth.business?.id || !auth.user?.id || !customerId) {
+    if (!auth.business?.id || !auth.user?.id || !customer) {
       toast({ title: "Customer profile required", description: "A linked customer record is needed before redemption." });
       return;
     }
 
-    await redeemReward({ businessId: auth.business.id, customerId, reward, userId: auth.user.id, sourceType: "portal" });
+    await redeemCustomerReward({ businessId: auth.business.id, branchId: customer.branch_id, customerId: customer.id, reward, userId: auth.user.id });
     toast({ title: "Reward redemption requested" });
     await loadRewards();
   }
@@ -61,6 +63,7 @@ export function CustomerRewardsPage() {
   const pointsIssued = useMemo(() => transactions.filter((item) => item.points > 0).reduce((total, item) => total + item.points, 0), [transactions]);
 
   if (loading) return <LoadingState title="Loading rewards" />;
+  if (!customer) return <EmptyState title="Customer record not linked" description="Your customer profile must be linked before rewards appear." />;
 
   return (
     <div className="grid gap-4">

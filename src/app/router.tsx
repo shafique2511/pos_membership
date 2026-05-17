@@ -22,6 +22,9 @@ import { CustomerRegisterPage } from "@/pages/portal/CustomerRegisterPage";
 import { CustomerBookingsPage } from "@/pages/portal/CustomerBookingsPage";
 import { CustomerMembershipPage } from "@/pages/portal/CustomerMembershipPage";
 import { CustomerRewardsPage } from "@/pages/portal/CustomerRewardsPage";
+import { CustomerPaymentsPage } from "@/pages/portal/CustomerPaymentsPage";
+import { CustomerProfilePage } from "@/pages/portal/CustomerProfilePage";
+import { PublicBusinessPage } from "@/pages/public/PublicBusinessPage";
 import { PublicBookingPage } from "@/pages/public/PublicBookingPage";
 import { LoyaltyPage } from "@/pages/dashboard/LoyaltyPage";
 import { PosPage } from "@/pages/dashboard/PosPage";
@@ -119,7 +122,7 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <RequireRole roles="customer">
-              <ProfilePage />
+              <CustomerProfilePage />
             </RequireRole>
           </ProtectedRoute>
         ),
@@ -154,7 +157,21 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "payments",
+        element: (
+          <ProtectedRoute>
+            <RequireRole roles="customer">
+              <CustomerPaymentsPage />
+            </RequireRole>
+          </ProtectedRoute>
+        ),
+      },
     ],
+  },
+  {
+    path: "/public/:businessSlug",
+    element: <PublicBusinessPage />,
   },
   {
     path: "/public/:businessSlug/book",

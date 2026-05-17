@@ -57,4 +57,6 @@ export const portalNavItems: NavItem[] = [
   { label: "Bookings", href: "/portal/bookings", moduleKey: "bookings", icon: CalendarDays },
   { label: "Membership", href: "/portal/membership", moduleKey: "memberships", icon: IdCard },
   { label: "Rewards", href: "/portal/rewards", moduleKey: "loyalty", icon: Gift },
+  { label: "Payments", href: "/portal/payments", moduleKey: "payments", icon: CircleDollarSign },
+  { label: "Profile", href: "/portal/profile", moduleKey: "customer_portal", icon: UserRound },
 ];
