@@ -56,5 +56,5 @@ export const portalNavItems: NavItem[] = [
   { label: "Portal", href: "/portal", moduleKey: "customer_portal", icon: WalletCards },
   { label: "Bookings", href: "/portal/bookings", moduleKey: "bookings", icon: CalendarDays },
   { label: "Membership", href: "/portal/membership", moduleKey: "memberships", icon: IdCard },
-  { label: "Rewards", href: "/portal", moduleKey: "loyalty", icon: Gift },
+  { label: "Rewards", href: "/portal/rewards", moduleKey: "loyalty", icon: Gift },
 ];
