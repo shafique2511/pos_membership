@@ -6,6 +6,7 @@ import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { RegisterPage } from "@/pages/auth/RegisterPage";
 import { ModulePage } from "@/pages/dashboard/ModulePage";
+import { DashboardPage } from "@/pages/dashboard/DashboardPage";
 import { SetupWizardPage } from "@/pages/dashboard/SetupWizardPage";
 import { SettingsPage } from "@/pages/settings/SettingsPage";
 import { DataBackupPage } from "@/pages/settings/DataBackupPage";
@@ -46,7 +47,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <ModulePage moduleKey="dashboard" title="Dashboard" /> },
+      { index: true, element: <DashboardPage /> },
       { path: "setup", element: <RequireRole roles="owner"><SetupWizardPage /></RequireRole> },
       { path: "customers", element: <ModulePage moduleKey="customers" title="Customers" /> },
       { path: "bookings", element: <RequireModule moduleKey="bookings"><ModulePage moduleKey="bookings" title="Bookings" /></RequireModule> },
