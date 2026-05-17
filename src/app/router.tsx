@@ -26,6 +26,7 @@ import { PublicBookingPage } from "@/pages/public/PublicBookingPage";
 import { LoyaltyPage } from "@/pages/dashboard/LoyaltyPage";
 import { PosPage } from "@/pages/dashboard/PosPage";
 import { InventoryPage } from "@/pages/dashboard/InventoryPage";
+import { BranchesPage } from "@/pages/dashboard/BranchesPage";
 
 export const router = createBrowserRouter([
   {
@@ -70,7 +71,7 @@ export const router = createBrowserRouter([
       { path: "reports", element: <RequireModule moduleKey="reports"><ModulePage moduleKey="reports" title="Reports" /></RequireModule> },
       { path: "marketing", element: <RequireModule moduleKey="marketing"><ModulePage moduleKey="marketing" title="Marketing" /></RequireModule> },
       { path: "notifications", element: <RequireModule moduleKey="notifications"><ModulePage moduleKey="notifications" title="Notifications" /></RequireModule> },
-      { path: "branches", element: <RequireModule moduleKey="branches"><ModulePage moduleKey="branches" title="Branches" /></RequireModule> },
+      { path: "branches", element: <RequireModule moduleKey="branches"><BranchesPage /></RequireModule> },
     ],
   },
   {
