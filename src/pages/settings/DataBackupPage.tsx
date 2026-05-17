@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Download, FileArchive, FileJson, FileSpreadsheet, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Download, FileArchive, FileJson, FileSpreadsheet, Filter, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
+import { Dropdown } from "@/components/ui/dropdown";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState, LoadingState } from "@/components/shared/StateViews";
+import { BackupExportCard, MetricCard } from "@/components/shared/DesignSystem";
+import { Tabs } from "@/components/ui/tabs";
+import { BackupHistoryTable } from "@/components/backup/BackupHistoryTable";
+import { BackupProgressModal } from "@/components/backup/BackupProgressModal";
 import { useToast } from "@/components/ui/toast";
 import { useAuth } from "@/features/auth/auth-context";
 import { listBranches, type BranchRecord } from "@/features/branches/branch-service";
@@ -34,6 +38,8 @@ export function DataBackupPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [pendingExport, setPendingExport] = useState<PendingExport | null>(null);
+  const [activeTab, setActiveTab] = useState<"create" | "history">("create");
+  const [progressBackup, setProgressBackup] = useState<BackupExportRecord | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -83,6 +89,8 @@ export function DataBackupPage() {
       });
       setPendingExport(null);
       await loadBackupData();
+      setProgressBackup((await listBackupExports(auth.business.id)).find((item) => item.id === id) ?? null);
+      setActiveTab("history");
       toast({ title: "Backup/export requested", description: `Export job ${id.slice(0, 8)} was created and audit logged.` });
     } catch (error) {
       toast({ title: "Backup/export failed", description: error instanceof Error ? error.message : "Try again later." });
@@ -92,6 +100,9 @@ export function DataBackupPage() {
   }
 
   if (loading) return <LoadingState title="Loading backup settings" />;
+
+  const latestBackup = history[0] ?? null;
+  const completedBackups = history.filter((item) => item.status === "completed").length;
 
   return (
     <div className="grid gap-5">
@@ -112,150 +123,75 @@ export function DataBackupPage() {
         </CardHeader>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Create backup/export</CardTitle>
-            <CardDescription>Select a scope, format, branch, and date range. Sensitive exports require confirmation.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="grid gap-2">
-                <Label>Export scope</Label>
-                <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={scope} onChange={(event) => setScope(event.target.value as BackupScope)}>
-                  {backupScopes.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
-                </select>
-              </div>
-              <div className="grid gap-2">
-                <Label>Format</Label>
-                <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={format} onChange={(event) => setFormat(event.target.value as BackupFormat)}>
-                  <option value="csv">CSV</option>
-                  <option value="json">JSON</option>
-                </select>
-              </div>
-              <div className="grid gap-2">
-                <Label>Branch</Label>
-                <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={branchId} onChange={(event) => setBranchId(event.target.value)}>
-                  <option value="">All branches</option>
-                  {branches.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}
-                </select>
-              </div>
-              <div className="grid gap-2">
-                <Label>Report format</Label>
-                <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={reportFormat} onChange={(event) => setReportFormat(event.target.value as BackupFormat)}>
-                  <option value="pdf">PDF</option>
-                  <option value="excel">Excel</option>
-                  <option value="csv">CSV</option>
-                </select>
-              </div>
-              <div className="grid gap-2">
-                <Label>Start date</Label>
-                <Input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} />
-              </div>
-              <div className="grid gap-2">
-                <Label>End date</Label>
-                <Input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} />
-              </div>
-            </div>
-
-            <div className="rounded-lg border p-4">
-              <p className="font-medium">{selectedScope?.label}</p>
-              <p className="mt-1 text-sm text-muted-foreground">Includes: {selectedScope?.tables.join(", ")}</p>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-              <Button onClick={() => requestExport({ scope: "full_business", format: "zip", branchId: null, dateFrom, dateTo })}>
-                <FileArchive className="h-4 w-4" />Backup All Data
-              </Button>
-              <Button variant="outline" onClick={() => requestExport({ scope, format, branchId, dateFrom, dateTo })}>
-                <FileJson className="h-4 w-4" />Export by Module
-              </Button>
-              <Button variant="outline" onClick={() => requestExport({ scope, format, branchId, dateFrom, dateTo })}>
-                <Download className="h-4 w-4" />Export by Date Range
-              </Button>
-              <Button variant="outline" onClick={() => requestExport({ scope: "branch_data", format, branchId, dateFrom, dateTo })}>
-                <Download className="h-4 w-4" />Export by Branch
-              </Button>
-            </div>
-            <Button variant="secondary" onClick={() => requestExport({ scope: "reports", format: reportFormat, branchId, dateFrom, dateTo })}>
-              <FileSpreadsheet className="h-4 w-4" />Optional report export
-            </Button>
-          </CardContent>
-        </Card>
-
-        <div className="grid gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Backup status</CardTitle>
-              <CardDescription>Latest export job state.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {history[0] ? (
-                <div className="grid gap-2">
-                  <Badge variant="secondary">{history[0].status}</Badge>
-                  <p className="text-sm text-muted-foreground">{history[0].export_type} · {history[0].export_format}</p>
-                  <p className="text-sm text-muted-foreground">{new Date(history[0].created_at).toLocaleString()}</p>
-                </div>
-              ) : (
-                <EmptyState title="No backup yet" description="Backup history will appear after your first request." />
-              )}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Download Backup</CardTitle>
-              <CardDescription>Completed jobs with a file URL can be downloaded here.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-2">
-              {history.filter((item) => item.file_url).length === 0 ? (
-                <p className="text-sm text-muted-foreground">No downloadable backup files yet.</p>
-              ) : history.filter((item) => item.file_url).slice(0, 3).map((item) => (
-                <a key={item.id} className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-secondary" href={item.file_url ?? "#"} rel="noreferrer" target="_blank">
-                  <Download className="h-4 w-4" />{item.export_type}
-                </a>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <MetricCard icon={FileArchive} title="Last backup date" value={latestBackup ? new Date(latestBackup.created_at).toLocaleDateString() : "Never"} description={latestBackup?.status ?? "No export jobs yet"} />
+        <MetricCard icon={Download} title="Ready downloads" value={history.filter((item) => item.file_url).length} description={`${completedBackups} completed jobs`} />
+        <MetricCard icon={ShieldCheck} title="Owner access" value="Protected" description="Full backup page is owner-only" />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Backup history</CardTitle>
-          <CardDescription>Stored in backup_exports and protected by Owner-only backup access.</CardDescription>
+          <CardTitle>Backup workspace</CardTitle>
+          <CardDescription>Clean owner-only backup flow with filters, warning, progress, status, and download states.</CardDescription>
         </CardHeader>
-        <CardContent>
-          {history.length === 0 ? (
-            <EmptyState title="No backup history" description="Created exports will appear here." />
+        <CardContent className="grid gap-5">
+          <Tabs
+            items={[
+              { value: "create", label: "Create export", icon: <Filter className="h-4 w-4" /> },
+              { value: "history", label: "Backup history", icon: <FileArchive className="h-4 w-4" /> },
+            ]}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
+
+          {activeTab === "create" ? (
+            <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+              <div className="grid gap-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid gap-2">
+                    <Label>Export scope</Label>
+                    <Dropdown options={backupScopes.map((item) => ({ value: item.key, label: item.label }))} value={scope} onChange={(event) => setScope(event.target.value as BackupScope)} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Format</Label>
+                    <Dropdown options={[{ value: "csv", label: "CSV" }, { value: "json", label: "JSON" }]} value={format} onChange={(event) => setFormat(event.target.value as BackupFormat)} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Branch</Label>
+                    <Dropdown options={[{ value: "", label: "All branches" }, ...branches.map((branch) => ({ value: branch.id, label: branch.name }))]} value={branchId} onChange={(event) => setBranchId(event.target.value)} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Report format</Label>
+                    <Dropdown options={[{ value: "pdf", label: "PDF" }, { value: "excel", label: "Excel" }, { value: "csv", label: "CSV" }]} value={reportFormat} onChange={(event) => setReportFormat(event.target.value as BackupFormat)} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Start date</Label>
+                    <Input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>End date</Label>
+                    <Input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} />
+                  </div>
+                </div>
+
+                <div className="rounded-lg border bg-secondary/30 p-4">
+                  <p className="font-medium">{selectedScope?.label}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Includes: {selectedScope?.tables.join(", ")}</p>
+                </div>
+              </div>
+
+              <div className="grid gap-3">
+                <BackupExportCard title="Backup All Data" description="Create a full business ZIP export across all owner-owned data." actionLabel="Backup" onAction={() => requestExport({ scope: "full_business", format: "zip", branchId: null, dateFrom, dateTo })} />
+                <BackupExportCard title="Export by Module" description="Export only the selected module scope in CSV or JSON." actionLabel="Export" onAction={() => requestExport({ scope, format, branchId, dateFrom, dateTo })} />
+                <BackupExportCard title="Export by Date Range" description="Apply the selected start and end date filters." actionLabel="Export" onAction={() => requestExport({ scope, format, branchId, dateFrom, dateTo })} />
+                <BackupExportCard title="Export by Branch" description="Export selected branch data with branch_id isolation." actionLabel="Export" onAction={() => requestExport({ scope: "branch_data", format, branchId, dateFrom, dateTo })} />
+                <Button variant="secondary" onClick={() => requestExport({ scope: "reports", format: reportFormat, branchId, dateFrom, dateTo })}>
+                  <FileSpreadsheet className="h-4 w-4" />Optional report export
+                </Button>
+              </div>
+            </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Scope</TableHead>
-                  <TableHead>Format</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Download</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {history.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>{new Date(item.created_at).toLocaleString()}</TableCell>
-                    <TableCell>{item.export_type}</TableCell>
-                    <TableCell>{item.export_format}</TableCell>
-                    <TableCell><Badge variant="secondary">{item.status}</Badge></TableCell>
-                    <TableCell>
-                      {item.file_url ? (
-                        <a className="text-sm text-primary hover:underline" href={item.file_url} rel="noreferrer" target="_blank">Download</a>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">Not ready</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <BackupHistoryTable history={history} onViewProgress={setProgressBackup} />
           )}
         </CardContent>
       </Card>
@@ -280,6 +216,8 @@ export function DataBackupPage() {
           </div>
         </div>
       </Dialog>
+
+      <BackupProgressModal backup={progressBackup} open={Boolean(progressBackup)} onClose={() => setProgressBackup(null)} />
     </div>
   );
 }

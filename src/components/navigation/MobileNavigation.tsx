@@ -43,8 +43,8 @@ export function MobileNavigation({ open, onClose }: MobileNavigationProps) {
                 onClick={onClose}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground",
-                    isActive && "bg-secondary text-foreground"
+                    "focus-ring flex min-h-10 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground",
+                    isActive && "bg-primary/10 text-primary"
                   )
                 }
               >

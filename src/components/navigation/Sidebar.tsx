@@ -14,10 +14,11 @@ export function Sidebar() {
   });
 
   return (
-    <aside className="hidden h-screen w-72 shrink-0 border-r bg-card lg:sticky lg:top-0 lg:block">
+    <aside className="hidden h-screen w-72 shrink-0 border-r bg-card/95 lg:sticky lg:top-0 lg:block">
       <div className="flex h-full flex-col">
         <div className="border-b p-5">
-          <p className="text-lg font-semibold">{businessName}</p>
+          <p className="text-xs font-medium uppercase text-muted-foreground">Luxantara Members</p>
+          <p className="mt-2 truncate text-lg font-semibold">{businessName}</p>
           <Badge className="mt-2" variant="outline">
             {businessTypeLabels[businessType]}
           </Badge>
@@ -33,8 +34,8 @@ export function Sidebar() {
                 end={item.href === "/dashboard" || item.href === "/settings"}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-                    isActive && "bg-secondary text-foreground"
+                    "focus-ring flex min-h-10 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                    isActive && "bg-primary/10 text-primary"
                   )
                 }
               >

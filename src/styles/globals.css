@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 42 24% 97%;
+    --background: 40 18% 97%;
     --foreground: 222 25% 13%;
     --card: 0 0% 100%;
     --card-foreground: 222 25% 13%;
@@ -12,16 +12,16 @@
     --popover-foreground: 222 25% 13%;
     --primary: 174 58% 28%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 94%;
+    --secondary: 210 16% 94%;
     --secondary-foreground: 222 25% 13%;
-    --muted: 220 14% 94%;
+    --muted: 210 16% 94%;
     --muted-foreground: 220 9% 43%;
     --accent: 32 72% 54%;
     --accent-foreground: 222 25% 13%;
     --destructive: 0 74% 48%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 88%;
-    --input: 220 13% 88%;
+    --border: 214 16% 88%;
+    --input: 214 16% 88%;
     --ring: 174 58% 28%;
     --radius: 0.5rem;
   }
@@ -34,10 +34,28 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  button,
+  input,
+  select,
+  textarea {
+    letter-spacing: 0;
+  }
 }
 
 @layer components {
   .app-shell {
     @apply min-h-screen bg-background;
+    background-image:
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(210 16% 95%) 100%);
+  }
+
+  .surface-card {
+    @apply rounded-lg border bg-card shadow-sm;
+    box-shadow: 0 1px 2px hsl(222 25% 13% / 0.04), 0 10px 24px hsl(222 25% 13% / 0.04);
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
 }

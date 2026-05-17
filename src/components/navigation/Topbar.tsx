@@ -18,7 +18,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
         <Button aria-label="Open navigation" className="lg:hidden" size="icon" variant="ghost" onClick={onMenuClick}>
           <Menu className="h-5 w-5" />
