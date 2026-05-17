@@ -24,6 +24,7 @@ import { CustomerMembershipPage } from "@/pages/portal/CustomerMembershipPage";
 import { CustomerRewardsPage } from "@/pages/portal/CustomerRewardsPage";
 import { PublicBookingPage } from "@/pages/public/PublicBookingPage";
 import { LoyaltyPage } from "@/pages/dashboard/LoyaltyPage";
+import { PosPage } from "@/pages/dashboard/PosPage";
 
 export const router = createBrowserRouter([
   {
@@ -60,7 +61,7 @@ export const router = createBrowserRouter([
       { path: "bookings", element: <RequireModule moduleKey="bookings"><BookingsPage /></RequireModule> },
       { path: "memberships", element: <RequireModule moduleKey="memberships"><MembershipsPage /></RequireModule> },
       { path: "loyalty", element: <RequireModule moduleKey="loyalty"><LoyaltyPage /></RequireModule> },
-      { path: "pos", element: <RequireModule moduleKey="pos"><ModulePage moduleKey="pos" title="POS" /></RequireModule> },
+      { path: "pos", element: <RequireModule moduleKey="pos"><PosPage /></RequireModule> },
       { path: "inventory", element: <RequireModule moduleKey="inventory"><ModulePage moduleKey="inventory" title="Inventory" /></RequireModule> },
       { path: "staff", element: <RequireModule moduleKey="staff"><ModulePage moduleKey="staff" title="Staff" /></RequireModule> },
       { path: "staff-commission", element: <RequireModule moduleKey="staff_commission"><ModulePage moduleKey="staff_commission" title="Staff Commission" /></RequireModule> },
