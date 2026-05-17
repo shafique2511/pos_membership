@@ -81,7 +81,9 @@ export async function getRolePermissions(businessId?: string | null, role?: Busi
 
 export function hasRole(state: AuthState, roles: BusinessRole | BusinessRole[]) {
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
-  return Boolean(state.profile && allowedRoles.includes(state.profile.role));
+  const metadataRole = state.user?.user_metadata.role as BusinessRole | undefined;
+  const currentRole = state.profile?.role ?? metadataRole;
+  return Boolean(currentRole && allowedRoles.includes(currentRole));
 }
 
 export function hasPermission(state: AuthState, moduleKey: ModuleKey | string, permission: keyof Pick<RolePermission, "can_view" | "can_create" | "can_update" | "can_delete" | "can_export">) {

@@ -25,7 +25,7 @@ export function BusinessProvider({ children }: BusinessProviderProps) {
     return {
       businessName: business?.name ?? "Luxantara Members",
       businessType,
-      role: profile?.role ?? "owner",
+      role: profile?.role ?? (business ? "owner" : "owner"),
       modules,
       enabledModuleKeys,
       loading,
