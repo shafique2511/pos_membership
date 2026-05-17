@@ -41,6 +41,7 @@ export type BusinessContextValue = {
   role: BusinessRole;
   modules: BusinessModule[];
   enabledModuleKeys: ModuleKey[];
+  loading: boolean;
   getBusinessLabel: (label: string) => string;
   isModuleEnabled: (moduleKey: ModuleKey) => boolean;
 };

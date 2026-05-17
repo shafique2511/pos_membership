@@ -1,21 +1,22 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FormField } from "@/components/shared/FormField";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormField } from "@/components/shared/FormField";
 import { useToast } from "@/components/ui/toast";
 import { getAuthErrorMessage, useAuth } from "@/features/auth/auth-context";
 
-export function ForgotPasswordPage() {
-  const { resetPassword } = useAuth();
+export function CustomerLoginPage() {
+  const { signIn } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reset password</CardTitle>
-        <CardDescription>Send a Supabase password reset email once auth is connected.</CardDescription>
+        <CardTitle>Customer login</CardTitle>
+        <CardDescription>Access bookings, memberships, rewards, receipts, and profile data.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -26,19 +27,20 @@ export function ForgotPasswordPage() {
 
             try {
               setLoading(true);
-              await resetPassword(String(formData.get("email") ?? ""));
-              toast({ title: "Reset email sent", description: "Check your inbox for the Supabase reset link." });
+              await signIn(String(formData.get("email") ?? ""), String(formData.get("password") ?? ""));
+              navigate("/portal", { replace: true });
             } catch (error) {
-              toast({ title: "Reset failed", description: getAuthErrorMessage(error) });
+              toast({ title: "Customer login failed", description: getAuthErrorMessage(error) });
             } finally {
               setLoading(false);
             }
           }}
         >
           <FormField label="Email" name="email" type="email" required />
-          <Button disabled={loading} type="submit">{loading ? "Sending" : "Send reset link"}</Button>
+          <FormField label="Password" name="password" type="password" required />
+          <Button disabled={loading} type="submit">{loading ? "Logging in" : "Login"}</Button>
         </form>
-        <Link className="mt-4 inline-block text-sm text-primary hover:underline" to="/auth/login">Back to login</Link>
+        <Link className="mt-4 inline-block text-sm text-primary hover:underline" to="/portal/register">Create customer account</Link>
       </CardContent>
     </Card>
   );

@@ -1,8 +1,11 @@
 import { Menu, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useBusiness } from "@/features/business/business-context";
+import { useAuth } from "@/features/auth/auth-context";
+import { useToast } from "@/components/ui/toast";
 
 type TopbarProps = {
   onMenuClick: () => void;
@@ -10,6 +13,9 @@ type TopbarProps = {
 
 export function Topbar({ onMenuClick }: TopbarProps) {
   const { role } = useBusiness();
+  const { signOut } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
@@ -23,7 +29,19 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <Badge variant="secondary">{role}</Badge>
-          <Button variant="outline">Account</Button>
+          <Button variant="outline" onClick={() => navigate("/settings/profile")}>
+            Profile
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={async () => {
+              await signOut();
+              toast({ title: "Logged out" });
+              navigate("/auth/login", { replace: true });
+            }}
+          >
+            Logout
+          </Button>
         </div>
       </div>
     </header>

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ToastProvider } from "@/components/ui/toast";
 import { BusinessProvider } from "@/features/business/business-context";
+import { AuthProvider } from "@/features/auth/auth-context";
 
 type AppProvidersProps = {
   children: ReactNode;
@@ -9,7 +10,9 @@ type AppProvidersProps = {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <ToastProvider>
-      <BusinessProvider>{children}</BusinessProvider>
+      <AuthProvider>
+        <BusinessProvider>{children}</BusinessProvider>
+      </AuthProvider>
     </ToastProvider>
   );
 }

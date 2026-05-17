@@ -1,12 +1,12 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { FormField } from "@/components/shared/FormField";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormField } from "@/components/shared/FormField";
 import { useToast } from "@/components/ui/toast";
 import { getAuthErrorMessage, useAuth } from "@/features/auth/auth-context";
 
-export function RegisterPage() {
+export function CustomerRegisterPage() {
   const { signUp } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -14,8 +14,8 @@ export function RegisterPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create owner account</CardTitle>
-        <CardDescription>Register the owner profile for private-use operations.</CardDescription>
+        <CardTitle>Customer registration</CardTitle>
+        <CardDescription>Create a member portal login for customer-owned portal data.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -30,9 +30,9 @@ export function RegisterPage() {
                 fullName: String(formData.get("name") ?? ""),
                 email: String(formData.get("email") ?? ""),
                 password: String(formData.get("password") ?? ""),
-                role: "owner",
+                role: "customer",
               });
-              toast({ title: "Registration submitted", description: "Check your email if confirmation is enabled in Supabase." });
+              toast({ title: "Customer registration submitted", description: "Profile linking will be completed after customer records are connected." });
             } catch (error) {
               toast({ title: "Registration failed", description: getAuthErrorMessage(error) });
             } finally {
@@ -40,14 +40,12 @@ export function RegisterPage() {
             }
           }}
         >
-          <FormField label="Owner name" name="name" required />
+          <FormField label="Full name" name="name" required />
           <FormField label="Email" name="email" type="email" required />
           <FormField label="Password" name="password" type="password" required />
           <Button disabled={loading} type="submit">{loading ? "Registering" : "Register"}</Button>
         </form>
-        <p className="mt-4 text-sm text-muted-foreground">
-          Already registered? <Link className="text-primary hover:underline" to="/auth/login">Login</Link>
-        </p>
+        <Link className="mt-4 inline-block text-sm text-primary hover:underline" to="/portal/login">Back to customer login</Link>
       </CardContent>
     </Card>
   );

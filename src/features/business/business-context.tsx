@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { businessTypeVocabulary } from "@/features/business/business-types";
 import { defaultModules } from "@/features/business/modules";
+import { useAuth } from "@/features/auth/auth-context";
 import type { BusinessContextValue, BusinessTypeKey, ModuleKey } from "@/types/business";
 
 const BusinessContext = createContext<BusinessContextValue | null>(null);
@@ -10,18 +11,24 @@ type BusinessProviderProps = {
 };
 
 export function BusinessProvider({ children }: BusinessProviderProps) {
-  const businessType: BusinessTypeKey = "coffee_shop";
-  const modules = defaultModules;
+  const { business, enabledModules, profile, loading } = useAuth();
+  const businessType: BusinessTypeKey = business?.business_types?.type_key ?? "coffee_shop";
 
   const value = useMemo<BusinessContextValue>(() => {
+    const dbModuleKeys = new Set(enabledModules.map((module) => module.module_key));
+    const modules = defaultModules.map((module) => ({
+      ...module,
+      enabled: module.core || dbModuleKeys.has(module.key) || (!business && module.enabled),
+    }));
     const enabledModuleKeys = modules.filter((module) => module.enabled).map((module) => module.key);
 
     return {
-      businessName: "Luxantara Members",
+      businessName: business?.name ?? "Luxantara Members",
       businessType,
-      role: "owner",
+      role: profile?.role ?? "owner",
       modules,
       enabledModuleKeys,
+      loading,
       getBusinessLabel(label: string) {
         return businessTypeVocabulary[businessType][label] ?? label;
       },
@@ -29,7 +36,7 @@ export function BusinessProvider({ children }: BusinessProviderProps) {
         return enabledModuleKeys.includes(moduleKey);
       },
     };
-  }, [businessType, modules]);
+  }, [business, businessType, enabledModules, loading, profile]);
 
   return <BusinessContext.Provider value={value}>{children}</BusinessContext.Provider>;
 }
