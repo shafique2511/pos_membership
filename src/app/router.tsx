@@ -9,6 +9,7 @@ import { ModulePage } from "@/pages/dashboard/ModulePage";
 import { SetupWizardPage } from "@/pages/dashboard/SetupWizardPage";
 import { SettingsPage } from "@/pages/settings/SettingsPage";
 import { DataBackupPage } from "@/pages/settings/DataBackupPage";
+import { ModuleSettingsPage } from "@/pages/settings/ModuleSettingsPage";
 import { CustomerPortalPage } from "@/pages/portal/CustomerPortalPage";
 import { ProtectedRoute, PublicOnlyRoute, RequireModule, RequireOwner, RequireRole } from "@/components/auth/RouteGuards";
 import { StaffInvitePage } from "@/pages/settings/StaffInvitePage";
@@ -73,6 +74,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <SettingsPage /> },
+      { path: "modules", element: <RequireOwner><ModuleSettingsPage /></RequireOwner> },
       { path: "profile", element: <ProfilePage /> },
       { path: "staff-invite", element: <RequireRole roles={["owner", "manager"]}><StaffInvitePage /></RequireRole> },
       {

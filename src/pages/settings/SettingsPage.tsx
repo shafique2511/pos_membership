@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { defaultModules } from "@/features/business/modules";
@@ -11,9 +12,14 @@ export function SettingsPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Module controls</CardTitle>
-          <CardDescription>Owner-controlled private-use modules. No SaaS billing or upgrade flow.</CardDescription>
+        <CardHeader className="flex-row items-center justify-between gap-4">
+          <div>
+            <CardTitle>Module controls</CardTitle>
+            <CardDescription>Owner-controlled private-use modules. No SaaS billing or upgrade flow.</CardDescription>
+          </div>
+          <Link className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-secondary" to="/settings/modules">
+            Manage modules
+          </Link>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2">
           {defaultModules.map((module) => (

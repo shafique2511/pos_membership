@@ -33,6 +33,7 @@ export type BusinessModule = {
   description: string;
   enabled: boolean;
   core?: boolean;
+  recommendedBusinessTypes?: BusinessTypeKey[];
 };
 
 export type BusinessContextValue = {
@@ -44,4 +45,5 @@ export type BusinessContextValue = {
   loading: boolean;
   getBusinessLabel: (label: string) => string;
   isModuleEnabled: (moduleKey: ModuleKey) => boolean;
+  isModuleVisible: (moduleKey: ModuleKey) => boolean;
 };

@@ -41,6 +41,14 @@ export function ModulePage({ moduleKey, title }: ModulePageProps) {
     { name: getBusinessLabel("booking"), status: "Pagination-ready layout" },
     { name: getBusinessLabel("service"), status: "Business-type labels active" },
   ];
+  const dashboardWidgets = [
+    { label: "Today bookings", value: "12", moduleKey: "bookings" as ModuleKey },
+    { label: "Today sales", value: "RM 840", moduleKey: "pos" as ModuleKey },
+    { label: "Active members", value: "128", moduleKey: "memberships" as ModuleKey },
+    { label: "Loyalty issued", value: "4,210", moduleKey: "loyalty" as ModuleKey },
+    { label: "Low stock", value: "7", moduleKey: "inventory" as ModuleKey },
+    { label: "Reports ready", value: "6", moduleKey: "reports" as ModuleKey },
+  ].filter((widget) => isModuleEnabled(widget.moduleKey));
 
   return (
     <div className="grid gap-5">
@@ -53,11 +61,15 @@ export function ModulePage({ moduleKey, title }: ModulePageProps) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {["Today", "Pending", "Completed"].map((label, index) => (
-          <Card key={label}>
+        {(moduleKey === "dashboard" ? dashboardWidgets : [
+          { label: "Today", value: "12" },
+          { label: "Pending", value: "4" },
+          { label: "Completed", value: "28" },
+        ]).map((item) => (
+          <Card key={item.label}>
             <CardHeader>
-              <CardDescription>{label}</CardDescription>
-              <CardTitle>{index === 0 ? "12" : index === 1 ? "4" : "28"}</CardTitle>
+              <CardDescription>{item.label}</CardDescription>
+              <CardTitle>{item.value}</CardTitle>
             </CardHeader>
           </Card>
         ))}

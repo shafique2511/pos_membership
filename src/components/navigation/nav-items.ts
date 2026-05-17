@@ -13,6 +13,7 @@ import {
   Megaphone,
   Package,
   Settings,
+  SlidersHorizontal,
   UserRound,
   Store,
   Users,
@@ -46,6 +47,7 @@ export const dashboardNavItems: NavItem[] = [
   { label: "Notifications", href: "/dashboard/notifications", moduleKey: "notifications", icon: Bell },
   { label: "Branches", href: "/dashboard/branches", moduleKey: "branches", icon: Package },
   { label: "Settings", href: "/settings", moduleKey: "settings", icon: Settings },
+  { label: "Modules", href: "/settings/modules", moduleKey: "settings", ownerOnly: true, icon: SlidersHorizontal },
   { label: "Profile", href: "/settings/profile", moduleKey: "settings", icon: UserRound },
   { label: "Data Backup", href: "/settings/data-backup", moduleKey: "data_backup", ownerOnly: true, icon: DatabaseBackup },
 ];

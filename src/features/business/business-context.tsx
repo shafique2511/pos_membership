@@ -21,6 +21,11 @@ export function BusinessProvider({ children }: BusinessProviderProps) {
       enabled: module.core || dbModuleKeys.has(module.key) || (!business && module.enabled),
     }));
     const enabledModuleKeys = modules.filter((module) => module.enabled).map((module) => module.key);
+    const hiddenModuleKeys = new Set(
+      enabledModules
+        .filter((module) => module.settings?.sidebar_visible === false)
+        .map((module) => module.module_key)
+    );
 
     return {
       businessName: business?.name ?? "Luxantara Members",
@@ -34,6 +39,9 @@ export function BusinessProvider({ children }: BusinessProviderProps) {
       },
       isModuleEnabled(moduleKey: ModuleKey) {
         return enabledModuleKeys.includes(moduleKey);
+      },
+      isModuleVisible(moduleKey: ModuleKey) {
+        return enabledModuleKeys.includes(moduleKey) && !hiddenModuleKeys.has(moduleKey);
       },
     };
   }, [business, businessType, enabledModules, loading, profile]);

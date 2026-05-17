@@ -11,14 +11,14 @@ type MobileNavigationProps = {
 };
 
 export function MobileNavigation({ open, onClose }: MobileNavigationProps) {
-  const { isModuleEnabled, role } = useBusiness();
+  const { isModuleVisible, role } = useBusiness();
 
   if (!open) return null;
 
   const visibleItems = dashboardNavItems.filter((item) => {
     if (item.ownerOnly && role !== "owner") return false;
     if (item.allowedRoles && !item.allowedRoles.includes(role)) return false;
-    return !item.moduleKey || isModuleEnabled(item.moduleKey);
+    return !item.moduleKey || isModuleVisible(item.moduleKey);
   });
 
   return (
